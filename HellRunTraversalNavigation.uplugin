@@ -1,0 +1,16 @@
+{
+  "FileVersion": 3,
+  "Version": 1,
+  "VersionName": "1.0",
+  "FriendlyName": "HellRun Traversal Navigation",
+  "Description": "Generated jump, vault, mantle, climb, and drop navigation with runtime traversal execution.",
+  "Category": "AI",
+  "CanContainContent": false,
+  "Modules": [
+    {
+      "Name": "HellRunTraversalNavigation",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
+    }
+  ]
+}
