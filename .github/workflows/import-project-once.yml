@@ -1,0 +1,51 @@
+name: Import HellRunTraversalNavigation source
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/import-project-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Import cleaned project archive
+        run: |
+          python - <<'PY'
+          import base64, shutil, zipfile
+          from pathlib import Path
+          raw = base64.b64decode(Path('.import/archive.b64').read_text().strip())
+          zip_path = Path('/tmp/project.zip')
+          zip_path.write_bytes(raw)
+          unpack = Path('/tmp/project')
+          with zipfile.ZipFile(zip_path) as z:
+              z.extractall(unpack)
+          src = unpack / 'HellRunTraversalNavigation'
+          for child in list(Path('.').iterdir()):
+              if child.name in {'.git', '.github', '.import'}:
+                  continue
+              if child.is_dir(): shutil.rmtree(child)
+              else: child.unlink()
+          for child in src.iterdir():
+              dst = Path('.') / child.name
+              if child.is_dir(): shutil.copytree(child, dst, dirs_exist_ok=True)
+              else: shutil.copy2(child, dst)
+          shutil.rmtree('.import', ignore_errors=True)
+          Path('.github/workflows/import-project-once.yml').unlink(missing_ok=True)
+          try: Path('.github/workflows').rmdir()
+          except OSError: pass
+          try: Path('.github').rmdir()
+          except OSError: pass
+          PY
+      - name: Commit imported project
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "Import HellRunTraversalNavigation source"
+          git push
