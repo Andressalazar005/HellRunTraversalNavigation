@@ -1,68 +1,52 @@
-# HellRun Traversal Navigation
+# Hell Run Traversal Navigation
 
-Generated traversal navigation for Unreal Engine 5 supporting jump, vault, mantle, climb, and drop links with runtime traversal execution.
+## Overview
+Hell Run Traversal Navigation is an Unreal Engine 5 navigation layer for movement that standard walkable NavMesh paths do not describe well: jumps, vaults, mantles, climbs, drops, and other traversal transitions. It combines a voxel navigation representation with generated traversal data and a runtime `UHellRunTraversalComponent` that can execute the selected traversal path. The plugin also includes dynamic-obstacle support, debug tooling, configurable navigation volumes, and automated traversal/navigation tests.
 
-**Version:** 1.0  
-**Category:** AI  
-**Module:** `HellRunTraversalNavigation` (Runtime)
+## Features
+- Voxel-based navigation representation for 3D/traversal-aware path generation.
+- Generated jump, vault, mantle, climb, and drop traversal transitions.
+- `UHellRunTraversalComponent` for executing traversal segments at runtime.
+- `AHellRunVoxelNavVolume` for defining and building voxel navigation regions.
+- Dynamic obstacle component for invalidating/updating affected navigation state.
+- Project settings for traversal generation, voxel resolution, movement constraints, and debug behavior.
+- `AHellRunVoxelPathDebugPawn` and navigation debug logging for inspecting generated routes.
+- Large-volume navigation implementation intended for non-trivial environments.
+- Automated dataset and traversal-execution tests included in the runtime module.
+
+## Architecture
+`HellRunVoxelNavigation` and `HellRunVoxelNavVolume` build/query the spatial representation. `HellRunTraversalNavigation` generates and evaluates the special traversal relationships that connect otherwise separated movement regions. Once a path is selected, `HellRunTraversalComponent` owns execution of its traversal portions. Dynamic obstacle support allows runtime objects to affect navigation without treating the generated data as permanently static.
 
 ## Installation
-
-From your Unreal project's `Plugins` directory:
-
-```bash
-git clone https://github.com/Andressalazar005/HellRunTraversalNavigation.git HellRunTraversalNavigation
-```
-
-Expected layout:
-
-```text
-YourProject/
-  Plugins/
-    HellRunTraversalNavigation/
-      HellRunTraversalNavigation.uplugin
-      Source/
-```
-
-Then:
-
-1. Close Unreal Editor.
-2. Delete `Binaries/` and `Intermediate/` if the plugin was previously compiled with another Unreal Engine version.
-3. Regenerate project files if your C++ workflow requires it.
-4. Build the project's **Development Editor** target, or launch Unreal and allow it to compile the source plugin.
-5. Open **Edit > Plugins** and confirm **HellRun Traversal Navigation** is enabled.
-6. Restart the editor if prompted.
-
-## Requirements
-
-- Unreal Engine 5 project with a working C++ toolchain.
-- No additional plugin dependency is declared by `HellRunTraversalNavigation.uplugin`.
-
-## What the plugin provides
-
-- Generated traversal links for jump, vault, mantle, climb, and drop movement.
-- Runtime traversal execution support.
-- A reusable navigation layer intended to extend normal movement/navigation with authored or generated traversal opportunities.
-
-## Verify the installation
-
-- Confirm the `HellRunTraversalNavigation` runtime module compiles and loads.
-- Check the Output Log for navigation/module initialization errors.
-- Test traversal generation and execution in a small representative level before applying it to large navigation spaces.
-
-## Used by
-
-`HellRunTacticalLab` declares this plugin as a required dependency. Install Traversal Navigation before compiling Tactical AI Lab.
-
-## Updating
+1. Clone or copy this repository to `<Project>/Plugins/HellRunTraversalNavigation`.
+2. Delete stale `Binaries` and `Intermediate` folders if it was built with another Unreal Engine version.
+3. Regenerate project files and compile your Editor target.
+4. Launch Unreal Editor and verify **Hell Run Traversal Navigation** is enabled under **Edit > Plugins**.
+5. Review the plugin's Project Settings before generating navigation for a production map; voxel size and traversal constraints directly affect cost and path quality.
 
 ```bash
-cd YourProject/Plugins/HellRunTraversalNavigation
-git pull
+git clone https://github.com/Andressalazar005/HellRunTraversalNavigation.git <Project>/Plugins/HellRunTraversalNavigation
 ```
 
-When changing Unreal Engine versions, delete `Binaries/` and `Intermediate/` before rebuilding.
+## Basic setup
+1. Add/configure a `HellRunVoxelNavVolume` around the space that needs traversal-aware navigation.
+2. Tune voxel/navigation and traversal-generation settings for your character dimensions and movement capabilities.
+3. Build/generate the navigation data for the test area.
+4. Add a `HellRunTraversalComponent` to agents that need to execute generated traversal segments.
+5. Use the debug pawn/logging to inspect paths and verify generated transitions before integrating them into higher-level AI movement.
+6. Add `HellRunDynamicNavObstacleComponent` to runtime obstacles that should participate in dynamic navigation updates.
+
+## Key types
+- `AHellRunVoxelNavVolume` — authored volume and generated voxel-navigation owner.
+- `FHellRunVoxelNavigation` — voxel path/query implementation.
+- `UHellRunTraversalComponent` — runtime traversal execution component.
+- `FHellRunTraversalNavigation` — traversal link/path generation logic.
+- `UHellRunDynamicNavObstacleComponent` — dynamic obstacle integration.
+- `AHellRunVoxelPathDebugPawn` — path visualization/debug actor.
+- `UHellRunTraversalNavigationSettings` — project-wide generation/execution tuning.
+
+## Testing
+The plugin includes automated tests for navigation datasets, traversal execution, and a subterranean navigation scenario. These are useful when changing voxel dimensions, traversal rules, or path execution behavior because regressions can otherwise be difficult to distinguish from content setup problems.
 
 ## Support
-
-Use GitHub Issues for reproducible traversal-generation, navigation, or runtime execution problems. Include your Unreal Engine version, level/navigation setup, reproduction steps, and relevant logs.
+Use GitHub Issues for reproducible navigation problems. Include your Unreal Engine version, voxel/traversal settings, agent dimensions, volume dimensions, start/end positions, and any debug-path output or logs.
