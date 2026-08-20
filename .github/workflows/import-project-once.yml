@@ -1,16 +1,15 @@
 name: Import HellRunTraversalNavigation source
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/import-project-once.yml'
+  issues:
+    types: [opened]
 
 permissions:
   contents: write
 
 jobs:
   import:
+    if: github.event.issue.title == 'RUN PROJECT IMPORT'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
