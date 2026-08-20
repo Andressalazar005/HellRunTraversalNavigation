@@ -1,0 +1,23 @@
+# Unreal generated build output
+Binaries/
+Intermediate/
+Saved/
+DerivedDataCache/
+.vs/
+.idea/
+*.sln
+*.VC.db
+*.VC.opendb
+*.suo
+*.opensdf
+*.sdf
+*.pdb
+*.obj
+*.dll
+*.lib
+*.exp
+*.ilk
+
+# OS/editor
+.DS_Store
+Thumbs.db
